@@ -1,9 +1,14 @@
 {
   "name": "vscode-ts-markdown-to-playground",
-  "displayName": "Link Markdown Codeblocks to TypeScript Playground",
-  "description": "Adds a link to the playground to every embedded TypeScript code snippet in markdown ",
-  "version": "1.0.0",
+  "publisher": "Orta",
+  "displayName": "Codeblocks to TS Playground",
+  "description": "Make markdown codeblocks link to the TypeScript playground ",
+  "version": "1.0.2",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/orta/vscode-ts-markdown-to-playground"
+  },
   "engines": {
     "vscode": "^1.36.0"
   },
