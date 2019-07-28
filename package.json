@@ -3,7 +3,7 @@
   "publisher": "Orta",
   "displayName": "Open in TypeScript Playground",
   "description": "Open TypeScript code in the TypeScript Playground",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",
