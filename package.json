@@ -71,19 +71,19 @@
       "commandPalette": [
         {
           "command": "tsPlayground.openFileInPlayground",
-          "when": "editorLangId == 'typescript' && !editorHasSelection"
+          "when": "editorLangId =~ /typescript(react)?/ && !editorHasSelection"
         },
         {
           "command": "tsPlayground.copyFileAsPlaygroundURL",
-          "when": "editorLangId == 'typescript' && !editorHasSelection"
+          "when": "editorLangId =~ /typescript(react)?/ && !editorHasSelection"
         },
         {
           "command": "tsPlayground.openSelectionInPlayground",
-          "when": "editorLangId == 'typescript' && editorHasSelection"
+          "when": "editorLangId =~ /typescript(react)?/ && editorHasSelection"
         },
         {
           "command": "tsPlayground.copySelectionAsPlaygroundURL",
-          "when": "editorLangId == 'typescript' && editorHasSelection"
+          "when": "editorLangId =~ /typescript(react)?/ && editorHasSelection"
         }
       ]
     }
