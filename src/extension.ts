@@ -1,6 +1,10 @@
 import * as vscode from "vscode"
 var codeBlocks = require("gfm-code-blocks")
 
+function getTypeScriptPlaygroundURL(code: string) {
+  return "https://www.typescriptlang.org/play/#src=" + encodeURI(code)
+}
+
 class LinkProvider implements vscode.DocumentLinkProvider {
   links: { lang: string; start: number }[] = []
 
@@ -39,7 +43,7 @@ class LinkProvider implements vscode.DocumentLinkProvider {
       return
     }
 
-    const url = "https://www.typescriptlang.org/play/#src=" + encodeURI(selectedBlock.code)
+    const url = getTypeScriptPlaygroundURL(selectedBlock.code)
 
     return {
       target: vscode.Uri.parse(url),
@@ -68,6 +72,37 @@ export function activate(context: vscode.ExtensionContext) {
 
   vscode.languages.registerDocumentLinkProvider(selector, linkProvider)
 
+  context.subscriptions.push(...[
+    vscode.commands.registerCommand("tsPlayground.openFileInPlayground", () => {
+      if (vscode.window.activeTextEditor) {
+        vscode.env.openExternal(
+          vscode.Uri.parse(getTypeScriptPlaygroundURL(vscode.window.activeTextEditor.document.getText()))
+        )
+      }
+    }),
+    vscode.commands.registerCommand("tsPlayground.copyFileAsPlaygroundURL", () => {
+      if (vscode.window.activeTextEditor) {
+        vscode.env.clipboard.writeText(
+          getTypeScriptPlaygroundURL(vscode.window.activeTextEditor.document.getText())
+        )
+      }
+    }),
+    vscode.commands.registerCommand("tsPlayground.openSelectionInPlayground", () => {
+      if (vscode.window.activeTextEditor) {
+        vscode.env.openExternal(
+          vscode.Uri.parse(getTypeScriptPlaygroundURL(getAllSelectedText(vscode.window.activeTextEditor)))
+        )
+      }
+    }),
+    vscode.commands.registerCommand("tsPlayground.copySelectionAsPlaygroundURL", () => {
+      if (vscode.window.activeTextEditor) {
+        vscode.env.clipboard.writeText(
+          getTypeScriptPlaygroundURL(getAllSelectedText(vscode.window.activeTextEditor))
+        )
+      }
+    }),
+  ])
+
   // vscode.workspace.onDidOpenTextDocument(event => decorateMarkdownEditor(vscode.window.activeTextEditor))
   // vscode.workspace.onWillSaveTextDocument(event => {
   //   const openEditor = vscode.window.visibleTextEditors.filter(editor => editor.document.uri === event.document.uri)[0]
@@ -80,6 +115,42 @@ function decorateMarkdownEditor(document: vscode.TextDocument) {
   return tsOrJSBlocks.map(b => ({ lang: b.lang, start: b.start }))
 }
 
+function getAllSelectedText(textEditor: vscode.TextEditor) {
+  return textEditor.selections
+    .map(selection => getSelectionContentWithoutLeadingWhitespace(textEditor, selection))
+    .join(getCurrentEOL(textEditor).repeat(2))
+}
+
+function getSelectionContentWithoutLeadingWhitespace(textEditor: vscode.TextEditor, selection: vscode.Selection) {
+  const textLines: string[] = []
+  let trimLength = Infinity;
+  for (let line = selection.start.line; line <= selection.end.line; line++) {
+    const lineEnd = line === selection.end.line
+      ? selection.end
+      : textEditor.document.positionAt(textEditor.document.offsetAt(new vscode.Position(line + 1, 0)) - 1)
+
+    let lineText = textEditor.document.getText(new vscode.Range(new vscode.Position(line, 0), lineEnd))
+    if (line === selection.start.line) {
+      lineText = " ".repeat(selection.start.character) + lineText.slice(selection.start.character)
+    }
+
+    const firstNonWhitespaceChar = lineText.match(/\S/)
+    if (firstNonWhitespaceChar) {
+      trimLength = Math.min(trimLength, firstNonWhitespaceChar.index!)
+    }
+    textLines.push(lineText)
+  }
+
+  return textLines.map(line => line.slice(trimLength)).join(getCurrentEOL(textEditor))
+}
+
+function getCurrentEOL(textEditor: vscode.TextEditor) {
+  switch (textEditor.document.eol) {
+    case vscode.EndOfLine.CRLF: return "\r\n"
+    case vscode.EndOfLine.LF: return "\n"
+  }
+}
+
 export const getCodeblocks = (document: vscode.TextDocument) => {
   const sourceCode = document.getText()
   const code = codeBlocks(sourceCode) as { lang: string; code: string; block: string; start: number; end: number }[]
@@ -88,4 +159,4 @@ export const getCodeblocks = (document: vscode.TextDocument) => {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
