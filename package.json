@@ -16,7 +16,11 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown"
+    "onLanguage:markdown",
+    "onCommand:tsPlayground.openFileAsPlayground",
+    "onCommand:tsPlayground.copyFileAsPlaygroundURL",
+    "onCommand:tsPlayground.openSelectionInPlayground",
+    "onCommand:tsPlayground.copySelectionAsPlaygroundURL"
   ],
   "main": "./out/extension.js",
   "scripts": {
@@ -39,5 +43,49 @@
   },
   "dependencies": {
     "gfm-code-blocks": "^1.0.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "tsPlayground.openFileInPlayground",
+        "category": "TypeScript Playground",
+        "title": "Open File in Playground"
+      },
+      {
+        "command": "tsPlayground.copyFileAsPlaygroundURL",
+        "category": "TypeScript Playground",
+        "title": "Copy File as Playground URL"
+      },
+      {
+        "command": "tsPlayground.openSelectionInPlayground",
+        "category": "TypeScript Playground",
+        "title": "Open Selection in Playground"
+      },
+      {
+        "command": "tsPlayground.copySelectionAsPlaygroundURL",
+        "category": "TypeScript Playground",
+        "title": "Copy Selection as Playground URL"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "tsPlayground.openFileInPlayground",
+          "when": "editorLangId == 'typescript' && !editorHasSelection"
+        },
+        {
+          "command": "tsPlayground.copyFileAsPlaygroundURL",
+          "when": "editorLangId == 'typescript' && !editorHasSelection"
+        },
+        {
+          "command": "tsPlayground.openSelectionInPlayground",
+          "when": "editorLangId == 'typescript' && editorHasSelection"
+        },
+        {
+          "command": "tsPlayground.copySelectionAsPlaygroundURL",
+          "when": "editorLangId == 'typescript' && editorHasSelection"
+        }
+      ]
+    }
   }
 }
